@@ -841,7 +841,7 @@ var IdbPouch = function(opts, callback) {
         }
       });
       if (!opts.continuous || (opts.continuous && !opts.cancelled)) {
-        call(opts.complete, null, {results: dedupResults});
+        call(opts.complete, null, {results: dedupResults, last_seq: opts.since});
       }
     };
 

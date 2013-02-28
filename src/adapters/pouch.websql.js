@@ -648,7 +648,7 @@ var webSqlPouch = function(opts, callback) {
             webSqlPouch.Changes.addListener(name, id, api, opts);
           }
           else {
-              call(opts.complete, null, {results: dedupResults});
+            call(opts.complete, null, {results: dedupResults, last_seq: opts.since});
           }
         });
       });

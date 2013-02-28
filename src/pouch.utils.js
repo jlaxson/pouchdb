@@ -449,7 +449,7 @@ var type = function(obj) {
     class2type[core_toString.call(obj)] || "object" :
     typeof obj;
 };
-
+/*
 var isWindow = function(obj) {
   return obj !== null && obj === obj.window;
 };
@@ -553,7 +553,58 @@ var extend = function() {
 
   // Return the modified object
   return target;
+};*/
+
+var deepCopy = function (object, deep) {
+  var ret = object, idx ;
+
+  switch ( type(object) ) {
+  case "array":
+    ret = object.slice();
+
+    if ( deep ) {
+      idx = ret.length;
+      while ( idx-- ) { ret[idx] = deepCopy( ret[idx], true ); }
+    }
+    break ;
+
+  case "object":
+    ret = {} ;
+    for(var key in object) { ret[key] = deep ? deepCopy(object[key], true) : object[key] ; }
+  }
+
+  return ret ;
 };
+
+var extend = function (deep) {
+  var args = Array.prototype.slice.call(arguments, 1), src,
+  // copy reference to target object
+      target = args[0] || {},
+      idx = 1,
+      length = args.length ,
+      options, copy , key, override = true;
+
+  // Handle case where we have only one item...extend SC
+  if (length === 1) {
+    target = {};
+    idx=0;
+  }
+
+  for ( ; idx < length; idx++ ) {
+    if (!(options = deepCopy(args[idx], deep))) continue ;
+    for(key in options) {
+      if (!options.hasOwnProperty(key)) continue ;
+      copy = options[key] ;
+      if (target===copy) continue ; // prevent never-ending loop
+      if (copy !== undefined && ( override || (target[key] === undefined) )) target[key] = copy ;
+    }
+    // Manually copy toString() because some JS engines do not enumerate it
+    // (such as IE8)
+    if (options.hasOwnProperty('toString')) target.toString = options.toString;
+  }
+
+  return target;
+}
 
 // Basic wrapper for localStorage
 var win = this;
